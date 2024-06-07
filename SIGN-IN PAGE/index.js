@@ -9,17 +9,6 @@ liItems.forEach(li => {
     this.classList.add('clicked');
   });
 });
-const liItem = document.querySelectorAll('.menus-signinPage ul li');
-
-liItem.forEach(li => {
-  li.addEventListener('click', function() {
-
-    liItem.forEach(item => {
-      item.classList.remove('clicked');
-    });
-    this.classList.add('clicked');
-  });
-});
 
 const passwordInput = document.getElementById('password');
 const togglePassword = document.getElementById('togglePassword');
@@ -35,16 +24,23 @@ togglePassword.addEventListener('click', function() {
         togglePassword.style.border = '';
     }
 }); 
+const spinner = document.querySelector('.boxRoll');
+
+function showSpinner() {
+    spinner.removeAttribute('hidden',false);
+}
+
+function hideSpinner() {
+    spinner.setAttribute('hidden',true);
+}
 let signUp=document.querySelector('.signUp')
 signUp.addEventListener('click',function(){
-    window.location.href='index.html'
+    window.location.href='../SIGNUP PAGE/index.html'
     
 })
-let logIn=document.querySelector('.logIn')
-logIn.addEventListener('click',function(){
-    window.location.href='../SIGN-IN PAGE/index.html'
+let forgotton=document.querySelector('.forgotton')
+forgotton.addEventListener('click',function(){
+    alert('kjn')
+    window.location.href="../PASSEORD PAGE/index.html"
     
 })
-
-
-

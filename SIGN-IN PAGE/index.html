@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
 
     <title>Document</title>
 </head>
@@ -45,28 +43,19 @@
              <!-- </div> -->
              </div>
         </div>
+ 
     </div>
         <!-- home  announcement ends-->
     <!-- section start -->
-  <div class="passwordValid">
-    <p>*password must be at least 8 characters long.
-
-
-    </p>
-  </div>
-  <div class="emailValid">
-    <p>*Enter a valid Email Address.
- </p>
   </div>
     <div class="section">
         <div class="section-inner">
             <div class="section-image">
                 <img src="Pictures/dl.beatsnoop 1.png" alt="">
             </div>
-            <form action="" id="signUpForm">
+            <form action="" id="signInForm">
                 <div class="form-text">
-                    <p>Create an account<span>Enter your details below</span></p>
-                  <div class="input-text" >  <input type="text" id="name" placeholder="Name"></div>
+                    <p>Log in to Exclusive<span>Enter your details below</span></p>
              <div class="email-text">
                 <input type="email" id="email" placeholder="Email">
                 
@@ -76,23 +65,21 @@
                 
              <span id="togglePassword" class="password-toggle">👁️</span>
 
-                <p id="user"></p>
+                <p id="errorPS">Invalid Email/Password</p>
                </div>
                 </div>
-                <button class="createAccount">Create Account</button>
+                <button class="createAccount">Log In</button>
+                
+                <span class="forgotton">Forgotten Password?</span>
+                <!-- <span class="signOutBTN">Forgotten Password?</span> -->
+       
                 <svg viewBox="25 25 50 50" class="boxRoll" hidden>
                     <circle r="20" cy="50" cx="50"></circle>
                   </svg>
-                 <p class="regex">*password must be at least one uppercase letter,<br> at least one lowercase letter, at least one symbol,<br> and is at least 8 characters long.
-
-
-
-                 </p>
-                <div class="accountExisted">
-                    <p>Already have an account?<span class="logIn">Log in</span></p>
-                </div>
             </form>
+            <!-- <button class="signOutBTN">Log In</button> -->
         </div>
+        <a href="../PASSEORD PAGE/index.html"></a>
     </div>
 
     <footer>
@@ -167,12 +154,13 @@
                     <div class="twitter"></div>
                 </div>
             </div>
+            
 
         </div>
     </footer>
 </div>
  
-
+<a href="../SIGN-IN PAGE/index.html"></a>
     <!-- SIGN UP PAGE ENDS -->
 
 </body>
@@ -201,148 +189,67 @@ const app = initializeApp(firebaseConfig);
 // get auth
 const auth=getAuth()
 const db=getFirestore(app)
-const signupForm=document.getElementById('signUpForm')
+let createAccount=document.querySelector('.createAccount')
 
-const spinner = document.querySelector('.boxRoll');
+signInForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            let email = signInForm.email.value;
+            let password = signInForm.password.value;
+            let errorPS=document.getElementById('errorPS')
+       
+            try {
+                showSpinner() 
+                const userCred = await signInWithEmailAndPassword(auth, email, password);
+                console.log('Signed in successfully');
+                // console.log(userCred);
+                // alert('signed in successfully')
+                createAccount.textContent='Logging In'
+                window.location.href='../index.html'
+                
+            } catch (error) {
+                console.log(error);
+                if (error.message === 'Firebase: Error (auth/invalid-credential).') {
+                    errorPS.style.display='block'
+                    console.log(error);
+                    const clear = setInterval(() => {
+                errorPS.style.display='none'
+                    clearInterval(clear);
+                    }, 3000);
+                }
+            }
+            finally{
+                hideSpinner() 
 
-function showSpinner() {
-    spinner.removeAttribute('hidden',false);
-}
+            }
+    
 
-function hideSpinner() {
-    spinner.setAttribute('hidden',true);
-}
-
-
-signUpForm.addEventListener('submit', async function(event) {
-event.preventDefault();
-const passwordValid = document.querySelector('.passwordValid');
-const emailValid = document.querySelector('.emailValid');
-let email = signUpForm.email.value;
-let password = signUpForm.password.value;
-let name = document.getElementById('name');
-let user = document.getElementById('user');
-const createAccount = document.querySelector('.createAccount');
-// createAccount.disabled = true;
-
-const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*()_+{}|:"<>?[\];',./-]).{8,}$/;
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-if (!emailRegex.test(email)) {
-emailValid.style.display = 'block';
-const resEmail = setInterval(() => {
-emailValid.style.display = 'none';
-clearInterval(resEmail);
-}, 5000);
-createAccount.disabled = false;
-return;
-} 
-
-if (!passwordRegex.test(password)) {
-passwordValid.style.display = 'block';
-const resPassword = setInterval(() => {
-passwordValid.style.display = 'none';
-clearInterval(resPassword);
-}, 5000);
-createAccount.disabled = false;
-return;
-}
-
-
-try {
-    showSpinner(); // Show spinner before form submission
-const res = await createUserWithEmailAndPassword(auth, email, password);
-const docRef = await doc(db, "users", res.user.uid);
-await setDoc(docRef, { name: name.value });
-console.log("Account Created Successfully");
-alert('Account Created Successfully');
-signUpForm.reset(); // Reset form fields
-createAccount.disabled = true;
-passwordValid.style.display = 'none';
-window.location.href='../index.html'
-}
-
-catch (error) {
-if (error.message == 'Firebase: Error (auth/email-already-in-use).') {
-user.style.display = 'block';
-user.textContent = 'User Already Exists';
-const res = setInterval(() => {
-user.style.display = 'none';
-clearInterval(res);
-}, 3000);
-emailValid.style.display = 'block';
-const resEmail = setInterval(() => {
-emailValid.style.display = 'none';
-clearInterval(resEmail);
-}, 5000);
-
-}
-} finally {
-hideSpinner(); 
-}
-});
+        })
 
 
 
 
-const signInForm = document.getElementById('signInForm');
-signInForm.addEventListener('submit', async function(event) {
-event.preventDefault();
-let email = signInForm.email.value;
-let password = signInForm.password.value;
-const textP = document.getElementById('textP');
-try {
-const res = await signInWithEmailAndPassword(auth, email, password);
-console.log("Login Successfully");
-alert('Login Successfully');
-// Retrieve user's name
-const docRef = doc(collection(db, 'users'), res.user.uid);
-const docSnap = await getDoc(docRef);
-if (docSnap.exists()) {
-const userData = docSnap.data();
-const name = userData.name;
-// Redirect with user's name as query parameter
-window.location.href = `/TODO/index.html?name=${encodeURIComponent(name)}`;
-} else {
-console.error('User document does not exist');
-}
-textP.textContent = '';
-signInForm.email.value = '';
-signInForm.password.value = '';
-} catch (error) {
-if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-textP.textContent = 'Invalid email or password';
-} else {
-console.error(error);
-}
-}
-});
-
-
-
-
-// const signOutBTN=document.getElementById('signOutBTN')
-//  signOutBTN.addEventListener('click', async () => {
-//         try {
-//             await signOut(auth);
-//             alert('Signed out Successfully')
-//             console.log('User signed out successfully');
-//         } catch (error) {
-//             console.log(error);
-//         }
-//     })
-const resetPassword=document.getElementById('resetPassword')
-resetPassword.addEventListener('submit',async(event)=>{
-event.preventDefault()
-let email = resetPassword.email.value;
-try {
-await sendPasswordResetEmail(auth, email)
-console.log('Password reset email has been sent');
-alert('Password reset email has been sent')
-} catch (error) {
-console.log(error);
-}
-})
+const signOutBTN=document.querySelector('.signOutBTN')
+ signOutBTN.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+            alert('Signed out Successfully')
+            console.log('User signed out successfully');
+        } catch (error) {
+            console.log(error);
+        }
+    })
+// const resetPassword=document.getElementById('resetPassword')
+// resetPassword.addEventListener('submit',async(event)=>{
+// event.preventDefault()
+// let email = resetPassword.email.value;
+// try {
+// await sendPasswordResetEmail(auth, email)
+// console.log('Password reset email has been sent');
+// alert('Password reset email has been sent')
+// } catch (error) {
+// console.log(error);
+// }
+// })
 // const passwordInput = document.getElementById('password');
 
 </script>
