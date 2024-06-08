@@ -95,7 +95,7 @@
             <div class="footer-support">
                 <p>Support</p>
                 <ul>
-                    <li>111 Bijoy sarani, Dhaka,  DH 1515, Bangladesh.</li>
+                    <li>111 Bijoy sarani, Dhaka, <br> DH 1515, Bangladesh.</li>
                     <li>badmusfaruq@gmail.com</li>
                     <li>+234 9025-479-011</li>
                 </ul>
@@ -191,66 +191,42 @@ const auth=getAuth()
 const db=getFirestore(app)
 let createAccount=document.querySelector('.createAccount')
 
+
 signInForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            let email = signInForm.email.value;
-            let password = signInForm.password.value;
-            let errorPS=document.getElementById('errorPS')
-       
-            try {
-                showSpinner() 
-                const userCred = await signInWithEmailAndPassword(auth, email, password);
-                console.log('Signed in successfully');
-                // console.log(userCred);
-                // alert('signed in successfully')
-                createAccount.textContent='Logging In'
-                window.location.href='../index.html'
-                
-            } catch (error) {
-                console.log(error);
-                if (error.message === 'Firebase: Error (auth/invalid-credential).') {
-                    errorPS.style.display='block'
-                    console.log(error);
-                    const clear = setInterval(() => {
-                errorPS.style.display='none'
-                    clearInterval(clear);
-                    }, 3000);
-                }
-            }
-            finally{
-                hideSpinner() 
+    e.preventDefault();
+    let email = signInForm.email.value;
+    let password = signInForm.password.value;
+    let errorPS = document.getElementById('errorPS');
+    let spinner = document.querySelector('.boxRoll');
 
-            }
-    
+    // Check if email and password are empty
+    if (!email.trim() || !password.trim()) {
+        alert('Please enter a valid email and password.');
+        return;
+    }
 
-        })
-
-
-
-
-const signOutBTN=document.querySelector('.signOutBTN')
- signOutBTN.addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-            alert('Signed out Successfully')
-            console.log('User signed out successfully');
-        } catch (error) {
-            console.log(error);
+    try {
+        showSpinner();
+        const userCred = await signInWithEmailAndPassword(auth, email, password);
+        console.log('Signed in successfully');
+        createAccount.textContent = 'Logging In';
+        window.location.href = '../index.html';
+        signInForm.disabled = true;
+    } catch (error) {
+        console.log(error);
+        if (error.message === 'Firebase: Error (auth/invalid-credential).') {
+            errorPS.style.display = 'block';
+            const clear = setInterval(() => {
+                errorPS.style.display = 'none';
+                clearInterval(clear);
+            }, 3000);
         }
-    })
-// const resetPassword=document.getElementById('resetPassword')
-// resetPassword.addEventListener('submit',async(event)=>{
-// event.preventDefault()
-// let email = resetPassword.email.value;
-// try {
-// await sendPasswordResetEmail(auth, email)
-// console.log('Password reset email has been sent');
-// alert('Password reset email has been sent')
-// } catch (error) {
-// console.log(error);
-// }
-// })
-// const passwordInput = document.getElementById('password');
+        createAccount.textContent = 'Log In';
+    } finally {
+        hideSpinner();
+    }
+});
+
 
 </script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

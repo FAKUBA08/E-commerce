@@ -40,7 +40,7 @@ signUp.addEventListener('click',function(){
 })
 let forgotton=document.querySelector('.forgotton')
 forgotton.addEventListener('click',function(){
-    alert('kjn')
+    // alert('kjn')
     window.location.href="../PASSEORD PAGE/index.html"
     
 })
